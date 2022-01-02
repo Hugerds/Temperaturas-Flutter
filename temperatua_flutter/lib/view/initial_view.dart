@@ -1,11 +1,23 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:temperatua_flutter/controller/initial_controller.dart';
+import 'package:temperatua_flutter/model/temperatura.dart';
 
 class InitialView extends StatefulWidget {
-  const InitialView({Key? key}) : super(key: key);
+  final Temperatura temperatura;
+  final Placemark place;
+  final Color backgroundColor;
+  final Color fontColor;
+  const InitialView(
+      {Key? key,
+      required this.temperatura,
+      required this.place,
+      required this.backgroundColor,
+      required this.fontColor})
+      : super(key: key);
 
   @override
   _InitialViewState createState() => _InitialViewState();
@@ -15,7 +27,8 @@ class _InitialViewState extends State<InitialView> {
   late InitialController initialController;
   @override
   void initState() {
-    initialController = Get.put(InitialController());
+    initialController =
+        Get.put(InitialController(widget.temperatura, widget.place));
     super.initState();
   }
 
@@ -24,66 +37,155 @@ class _InitialViewState extends State<InitialView> {
     return Obx(
       () => Material(
         child: SafeArea(
-          child: Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Visibility(
-                    visible: initialController.position != null,
-                    child: Text(
-                      initialController.txtPosition.value,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  if (initialController.txtTemperatura.trim().isNotEmpty)
-                    Text(initialController.txtTemperatura.value + " °C"),
-                  if (initialController.txtAmanhecer.trim().isNotEmpty)
-                    Text("Amanhecer: " + initialController.txtAmanhecer.value),
-                  if (initialController.txtAnoitecer.trim().isNotEmpty)
-                    Text("Anoitecer: " + initialController.txtAnoitecer.value),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (kDebugMode) {
-                        await initialController.getAddressFromLatLng();
-                      }
-                    },
-                    child: const Text("Apertar"),
-                  ),
-                  if (initialController.txtTemperatura.trim().isNotEmpty)
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount:
-                              initialController.temperatura?.forecast?.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Column(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 60.h,
+                child: Scaffold(
+                  backgroundColor: widget.backgroundColor,
+                  body: Center(
+                      child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 3.h, bottom: 3.h),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
                                 children: [
-                                  Text("Dia: " +
-                                      initialController
-                                          .temperatura!.forecast![index].date),
-                                  Text("Mínima: " +
-                                      initialController
-                                          .temperatura!.forecast![index].min
-                                          .toString() +
-                                      " °C" +
-                                      " | " +
-                                      "Máxima: " +
-                                      initialController
-                                          .temperatura!.forecast![index].max
-                                          .toString() +
-                                      " °C"),
-                                  const Divider(
-                                    color: Colors.grey,
-                                  )
+                                  Text(
+                                    "ATUALMENTE",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 23.sp,
+                                        color: widget.fontColor),
+                                  ),
+                                  Text(initialController.txtPosition.value,
+                                      style:
+                                          TextStyle(color: widget.fontColor)),
                                 ],
                               ),
-                            );
-                          }),
-                    )
-                ],
+                              Icon(
+                                initialController.temperatura.iconCondition,
+                                color: Colors.white,
+                                size: 30.h,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.thermostat,
+                                        color: Colors.white,
+                                      ),
+                                      Text(
+                                        initialController.txtTemperatura.value +
+                                            " °C",
+                                        style: TextStyle(
+                                            color: widget.fontColor,
+                                            fontSize: 17.sp),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width: 5.w,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        FontAwesomeIcons.wind,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(
+                                        width: 2.w,
+                                      ),
+                                      Text(
+                                          initialController
+                                              .txtVelocidadeVento.value,
+                                          style: TextStyle(
+                                              color: widget.fontColor,
+                                              fontSize: 17.sp))
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+                ),
               ),
-            ),
+              if (initialController.txtTemperatura.trim().isNotEmpty)
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: initialController.temperatura.forecast?.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          tileColor: index % 2 == 1
+                              ? Colors.grey.shade300
+                              : Colors.white,
+                          title: Padding(
+                            padding: EdgeInsets.only(left: 2.w, right: 2.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        initialController.temperatura
+                                            .forecast![index].iconCondition,
+                                      ),
+                                      SizedBox(
+                                        width: 2.w,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          initialController.temperatura
+                                                  .forecast![index].dayWeek +
+                                              " - " +
+                                              initialController.temperatura
+                                                  .forecast![index].date,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey[800]),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          initialController.temperatura
+                                                  .forecast![index].max
+                                                  .toString() +
+                                              " °" +
+                                              " / " +
+                                              initialController.temperatura
+                                                  .forecast![index].min
+                                                  .toString() +
+                                              " °",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey[800]))
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                )
+            ],
           ),
         ),
       ),

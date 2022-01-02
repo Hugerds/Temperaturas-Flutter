@@ -12,7 +12,7 @@ class HGWeatherService extends GetConnect {
       const url = "https://api.hgbrasil.com/weather";
       Response retorno = await httpClient.get(url, query: {
         "fields":
-            "only_results,temp,city_name,forecast,max,min,date,sunrise,sunset",
+            "only_results,temp,city_name,condition_slug, currently, forecast,max,min,date,sunrise,sunset,wind_speedy,condition",
         "key": key,
         "lat": latitude,
         "lon": longitude
@@ -21,6 +21,7 @@ class HGWeatherService extends GetConnect {
         throw Exception();
       }
       Temperatura temperatura = Temperatura.fromJson(retorno.body);
+
       return temperatura;
     } catch (e) {
       return null;
