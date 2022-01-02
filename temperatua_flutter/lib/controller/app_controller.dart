@@ -51,17 +51,32 @@ class AppController extends GetxController {
         desiredAccuracy: LocationAccuracy.high);
   }
 
-  Future getAddressFromLatLng() async {
+  Future getAddressFromLatLng(
+      {bool mapaGoogle = false,
+      double latitude = 0,
+      double longitude = 0}) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          position!.latitude, position!.longitude);
+      late List<Placemark> placemarks;
+      if (!mapaGoogle) {
+        placemarks = await placemarkFromCoordinates(
+            position!.latitude, position!.longitude);
+      } else {
+        placemarks = await placemarkFromCoordinates(latitude, longitude);
+      }
 
       Placemark place = placemarks[0];
       if (kDebugMode) {
         print(position);
       }
-      temperatura = await HGWeatherService().getTemperaturaByLatLong(
-          position!.latitude.toString(), position!.longitude.toString(), "");
+      if (!mapaGoogle) {
+        temperatura = await HGWeatherService().getTemperaturaByLatLong(
+            position!.latitude.toString(),
+            position!.longitude.toString(),
+            "543c7a0a");
+      } else {
+        temperatura = await HGWeatherService().getTemperaturaByLatLong(
+            latitude.toString(), longitude.toString(), "543c7a0a");
+      }
       if (temperatura != null) {
         temperatura!.iconCondition =
             _defineIconeTemperatura(temperatura!.condition);
@@ -74,7 +89,7 @@ class AppController extends GetxController {
           item.dayWeek = diaSemana;
           item.iconCondition = _defineIconeTemperatura(item.condition);
         }
-        Get.to(() => InitialView(
+        Get.offAll(() => InitialView(
               temperatura: temperatura!,
               place: place,
               backgroundColor: temperatura!.currently == "noite"
