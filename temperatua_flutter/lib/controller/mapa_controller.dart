@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:temperatua_flutter/controller/app_controller.dart';
-import 'package:temperatua_flutter/controller/initial_controller.dart';
 
 class MapaController extends GetxController {
   late double latitude;
@@ -10,9 +10,12 @@ class MapaController extends GetxController {
   late Set<Marker> markers;
   late AppController appController;
   late RxBool carregando;
-  MapaController(this.latitude, this.longitude) {
+  late BuildContext context;
+
+  //Construtor, recebe os parâmetros e seta a posição inicial das variáveis e do marcados do mapa
+  MapaController(this.latitude, this.longitude, this.context) {
     carregando = false.obs;
-    appController = AppController();
+    appController = AppController(context);
     markers = {};
     LatLng posicaoTemperatura = LatLng(latitude, longitude);
     final Marker marker = Marker(
@@ -22,7 +25,8 @@ class MapaController extends GetxController {
     markers.add(marker);
   }
 
-  onTapMap(LatLng position) {
+  //Função para sempre que for identificado um clique no mapa
+  void onTapMap(LatLng position) {
     latitude = position.latitude;
     longitude = position.longitude;
     final Marker marker = Marker(
@@ -34,6 +38,7 @@ class MapaController extends GetxController {
     update(['mapa']);
   }
 
+  //Função para o botão Buscar Temperatura
   Future onPressedTemperatura() async {
     try {
       carregando.value = true;

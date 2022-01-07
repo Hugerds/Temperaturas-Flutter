@@ -3,16 +3,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:temperatua_flutter/controller/initial_controller.dart';
+import 'package:temperatua_flutter/controller/temperatura_view_widget_controller.dart';
 import 'package:temperatua_flutter/model/temperatura.dart';
-import 'package:temperatua_flutter/view/mapa_view.dart';
 
-class InitialView extends StatefulWidget {
+class TemperaturaViewWidget extends StatefulWidget {
   final Temperatura temperatura;
   final Placemark place;
   final Color backgroundColor;
   final Color fontColor;
-  const InitialView(
+  const TemperaturaViewWidget(
       {Key? key,
       required this.temperatura,
       required this.place,
@@ -21,15 +20,15 @@ class InitialView extends StatefulWidget {
       : super(key: key);
 
   @override
-  _InitialViewState createState() => _InitialViewState();
+  _TemperaturaViewWidgetState createState() => _TemperaturaViewWidgetState();
 }
 
-class _InitialViewState extends State<InitialView> {
-  late InitialController initialController;
+class _TemperaturaViewWidgetState extends State<TemperaturaViewWidget> {
+  late TemperaturaViewWidgetController initialController;
   @override
   void initState() {
-    initialController =
-        Get.put(InitialController(widget.temperatura, widget.place));
+    initialController = Get.put(
+        TemperaturaViewWidgetController(widget.temperatura, widget.place));
     super.initState();
   }
 
@@ -190,8 +189,7 @@ class _InitialViewState extends State<InitialView> {
         alignment: Alignment.bottomRight,
         child: FloatingActionButton(
             backgroundColor: widget.backgroundColor,
-            onPressed: () => Get.to(
-                const MapaView(latitude: -23.3404789, longitude: -46.9259757)),
+            onPressed: initialController.onPressedBtnPesquisar,
             child: const Icon(FontAwesomeIcons.search)),
       ),
     );

@@ -7,6 +7,8 @@ class Temperatura {
   late String date;
   late String condition;
   late String currently;
+  late double latitude;
+  late double longitude;
   String? sunrise;
   String? sunset;
   String? cityName;
@@ -20,6 +22,8 @@ class Temperatura {
       required this.iconCondition,
       required this.condition,
       required this.currently,
+      required this.longitude,
+      required this.latitude,
       this.sunrise,
       this.sunset,
       this.cityName,
