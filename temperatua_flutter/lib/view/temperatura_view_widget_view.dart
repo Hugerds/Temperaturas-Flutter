@@ -66,7 +66,7 @@ class _TemperaturaViewWidgetState extends State<TemperaturaViewWidget> {
                             ),
                             Icon(
                               initialController.temperatura.iconCondition,
-                              color: Colors.white,
+                              color: widget.fontColor,
                               size: 30.h,
                             ),
                             Row(
@@ -74,9 +74,9 @@ class _TemperaturaViewWidgetState extends State<TemperaturaViewWidget> {
                               children: [
                                 Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.thermostat,
-                                      color: Colors.white,
+                                      color: widget.fontColor,
                                     ),
                                     Text(
                                       initialController.txtTemperatura.value +
@@ -92,9 +92,9 @@ class _TemperaturaViewWidgetState extends State<TemperaturaViewWidget> {
                                 ),
                                 Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       FontAwesomeIcons.wind,
-                                      color: Colors.white,
+                                      color: widget.fontColor,
                                     ),
                                     SizedBox(
                                       width: 2.w,
