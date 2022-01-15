@@ -12,6 +12,7 @@ class TemperaturaViewWidgetController extends GetxController {
   late RxString txtAmanhecer;
   late RxString txtAnoitecer;
   late RxString txtVelocidadeVento;
+  late RxBool moveIcon;
   late Placemark place;
   late Temperatura temperatura;
 
@@ -21,12 +22,19 @@ class TemperaturaViewWidgetController extends GetxController {
     txtAmanhecer = "".obs;
     txtAnoitecer = "".obs;
     txtVelocidadeVento = "".obs;
+    moveIcon = false.obs;
   }
 
   @override
   Future<void> onInit() async {
     await getAddressFromLatLng();
+    await Future.delayed(const Duration(seconds: 5));
+    moveIcon.value = true;
     super.onInit();
+  }
+
+  void controlaAnimacao() {
+    moveIcon.value = !moveIcon.value;
   }
 
   Future getAddressFromLatLng() async {
